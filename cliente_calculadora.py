@@ -14,7 +14,11 @@ while(True):
 
     # Evaluar expresión prefija
     if(respuesta == 1):
-        print("\nNel, todavía no xD\n")
+        print("\nIngresa tu expresión: ")
+        expresion = input()
+
+        print("\nResultado de evaluar la expresión: ")
+        print(str(server.prefijo(expresion)) + '\n')
 
     elif(respuesta == 2):
         print("\nIngresa tu expresión: ")
