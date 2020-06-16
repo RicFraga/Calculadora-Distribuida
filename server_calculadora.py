@@ -240,19 +240,19 @@ class RPC:
                 aux2 = pila.pop()
 
                 if(char == '+'):
-                    pila.append(int(aux1) + int(aux2))
+                    pila.append(float(aux1) + float(aux2))
             
                 elif(char == '-'):
-                    pila.append(int(aux1) - int(aux2))
+                    pila.append(float(aux1) - float(aux2))
 
                 elif(char == '*'):
-                    pila.append(int(aux1) * int(aux2))
+                    pila.append(float(aux1) * float(aux2))
 
                 elif(char == '/'):
-                    pila.append(int(aux1) / int(aux2))
+                    pila.append(float(aux1) / float(aux2))
 
                 elif(char == '^'):
-                    pila.append(int(aux1) + int(aux2))
+                    pila.append(float(aux1) + float(aux2))
 
         return float(pila.pop())
 
