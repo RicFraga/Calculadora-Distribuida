@@ -148,6 +148,7 @@ class RPC:
             for i in range(len(pila)):
                 posfijo = posfijo + pila.pop()
 
+        print(posfijo)
         return posfijo
 
 
@@ -254,7 +255,7 @@ class RPC:
                 elif(char == '^'):
                     pila.append(float(aux1) + float(aux2))
 
-        return float(pila.pop())
+        return pila.pop()
 
     def prefijo(self, expresion):
         return self.evaluar_prefijo(expresion)
