@@ -5,6 +5,7 @@ paréntesis anidados.
 
 """
 
+import numpy as np
 from xmlrpc.server import SimpleXMLRPCServer
 PUERTO = 8000
 
@@ -23,8 +24,12 @@ class RPC:
         pila = []
         posfijo = ""
         numeros = '0123456789'
+        especial = 'sctl'
+        i = 0
 
-        for char in expresion:
+        while(i < len(expresion)):
+            char = expresion[i]
+
             # Si es un número
             if(char in numeros):
                 posfijo = posfijo + char
@@ -35,9 +40,12 @@ class RPC:
 
             # Si es un paréntesis que cierra
             elif(char == ')'):
+
                 # Buscas el paréntesis que abre
                 aux = pila.pop()
-                posfijo = posfijo + aux
+
+                if(aux != '('):
+                    posfijo = posfijo + aux
 
                 while(aux != '('):
                     aux = pila.pop()
@@ -105,7 +113,36 @@ class RPC:
                     # Si el tope es de menor prioridad
                     elif(pila[-1] in '*/' or pila[-1] in '+-'):
                         pila.append(char)
+            
+            # Si es una funcion trigonometrica
+            elif(char in especial):
+                
+                # Si es una funcion seno
+                if(expresion[i:i+3] == 'sen'):
+                    pila.append('sen')
+                
+                elif(expresion[i:i+3] == 'cos'):
+                    pila.append('cos')
 
+                elif(expresion[i:i+3] == 'tan'):
+                    pila.append('tan')
+                
+                elif(expresion[i:i+3] == 'cot'):
+                    pila.append('cot')
+                
+                elif(expresion[i:i+3] == 'sec'):
+                    pila.append('sec')
+                
+                elif(expresion[i:i+3] == 'csc'):
+                    pila.append('csc')
+                
+                elif(expresion[i:i+3] == 'log'):
+                    pila.append('log')
+
+                i = i + 2
+            
+            i = i +1
+                
         # Si la pila no está vacía
         if(len(pila) > 0):
             for i in range(len(pila)):
@@ -115,33 +152,78 @@ class RPC:
 
 
     def evaluar_posfijo(self, expresion):
-            pila = []
-            numeros = '0123456789'
+        pila = []
+        numeros = '0123456789'
+        especial = 'sctl'
+        i = 0
 
-            for char in expresion:
+        while(i < len(expresion)):
+        #for char in expresion:
+            char = expresion[i]
 
-                # Si encontramos un número
-                if(char in numeros):
-                    pila.append(char)
+            # Si encontramos un número
+            if(char in numeros):
+                pila.append(char)
 
-                # Si encontramos un operador
-                if(char in '+-*/^'):
-                    aux1 = pila.pop()
-                    aux2 = pila.pop()
+            # Si encontramos un operador
+            elif(char in '+-*/^'):
+                aux1 = pila.pop()
+                aux2 = pila.pop()
 
-                    if(char == '+'):
-                        pila.append(float(aux1) + float(aux2))
+                if(char == '+'):
+                    pila.append(float(aux1) + float(aux2))
 
-                    elif(char == '-'):
-                        pila.append(float(aux2) - float(aux1))
+                elif(char == '-'):
+                    pila.append(float(aux2) - float(aux1))
 
-                    elif(char == '/'):
-                        pila.append(float(aux2) / float(aux1))
+                elif(char == '/'):
+                    pila.append(float(aux2) / float(aux1))
 
-                    elif(char == '*'):
-                        pila.append(float(aux2) * float(aux1))
+                elif(char == '*'):
+                    pila.append(float(aux2) * float(aux1))
+            
+            elif(char in especial):
 
-            return pila.pop()
+                # Si es una funcion seno
+                if(expresion[i:i+3] == 'sen'):
+                    valor = float(pila.pop())
+                    pila.append(np.sin(valor))
+                
+                elif(expresion[i:i+3] == 'cos'):
+                    valor = float(pila.pop())
+                    pila.append(np.cos(valor))
+
+                elif(expresion[i:i+3] == 'tan'):
+                    valor = float(pila.pop())
+                    sen = np.sin(valor)
+                    cos = np.cos(valor)
+                    pila.append(sen / cos)
+                
+                elif(expresion[i:i+3] == 'cot'):
+                    valor = float(pila.pop())
+                    sen = np.sin(valor)
+                    cos = np.cos(valor)
+                    pila.append(cos / sen)
+                
+                elif(expresion[i:i+3] == 'sec'):
+                    valor = float(pila.pop())
+                    cos = np.cos(valor)
+                    pila.append(1 / cos)
+                
+                elif(expresion[i:i+3] == 'csc'):
+                    valor = float(pila.pop())
+                    sen = np.sin(valor)
+                    pila.append(1 / sen)
+                
+                elif(expresion[i:i+3] == 'log'):
+                    valor = float(pila.pop())
+                    pila.append(np.log10(valor))
+
+                i = i + 2
+
+            i = i + 1
+
+        return pila.pop()
     
     def evaluar_prefijo(self, expresion):
         numeros = '0123456789'
