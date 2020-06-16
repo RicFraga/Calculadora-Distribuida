@@ -10,7 +10,8 @@ PUERTO = 8000
 
 class RPC:
     _metodos = ['prefijo', 'infijo', 'posfijo',
-                'infijo_a_posfijo' ,'evaluar_pos']
+                'infijo_a_posfijo' ,'evaluar_posfijo',
+                'evaluar_prefijo']
 
     def __init__(self, direccion):
         self._servidor = SimpleXMLRPCServer(direccion, allow_none=True)
@@ -113,7 +114,7 @@ class RPC:
         return posfijo
 
 
-    def evaluar_pos(self, expresion):
+    def evaluar_posfijo(self, expresion):
             pila = []
             numeros = '0123456789'
 
@@ -141,15 +142,46 @@ class RPC:
                         pila.append(float(aux2) * float(aux1))
 
             return pila.pop()
+    
+    def evaluar_prefijo(self, expresion):
+        numeros = '0123456789'
+        operadores = '+-*/^'
+        pila = []
+
+        # Recorremos la expresion al reves
+        for char in expresion[::-1]:
+            if(char in numeros):
+                pila.append(char)
+
+            elif(char in operadores):
+                aux1 = pila.pop()
+                aux2 = pila.pop()
+
+                if(char == '+'):
+                    pila.append(int(aux1) + int(aux2))
+            
+                elif(char == '-'):
+                    pila.append(int(aux1) - int(aux2))
+
+                elif(char == '*'):
+                    pila.append(int(aux1) * int(aux2))
+
+                elif(char == '/'):
+                    pila.append(int(aux1) / int(aux2))
+
+                elif(char == '^'):
+                    pila.append(int(aux1) + int(aux2))
+
+        return float(pila.pop())
 
     def prefijo(self, expresion):
-        return('Evaluar expresion en prefijo {}'.format(expresion))
+        return self.evaluar_prefijo(expresion)
 
     def infijo(self, expresion):
-        return self.evaluar_pos(self.infijo_a_posfijo(expresion))
+        return self.evaluar_posfijo(self.infijo_a_posfijo(expresion))
 
     def posfijo(self, expresion):
-        return self.evaluar_pos(expresion)
+        return self.evaluar_posfijo(expresion)
 
     def iniciar_servidor(self):
         self._servidor.serve_forever()
